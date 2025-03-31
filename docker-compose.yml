@@ -1,0 +1,25 @@
+
+services:
+  postgresdb:
+    image: postgres:17
+    container_name: postgres_eventos
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: eventos-backend
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 7781Cajas
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:6
+    container_name: mongodb_eventos
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+volumes:
+  pgdata:
+  mongodata:
