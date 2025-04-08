@@ -16,13 +16,14 @@ sequelize.sync({ force: false }).then(() => {
 });
 
 // Rutas de autenticación
-app.use('/api/auth', authRoutes);
+app.use('/', authRoutes);
 
-app.get('/', (req, res) => {
-  res.send('Auth Service en ejecución 🚀');
+// Ruta test (debug gateway)
+app.get('/api/auth/test', (req, res) => {
+  res.send('✔️ Llegó al auth-service');
 });
 
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.AUTH_PORT || 4001;
 app.listen(PORT, () => {
   console.log(`✅ Auth service escuchando en el puerto ${PORT}`);
 });

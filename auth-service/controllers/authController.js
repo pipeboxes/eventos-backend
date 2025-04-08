@@ -4,8 +4,10 @@ const generateToken = require('../utils/generateToken');
 
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
+  console.log('📩 Registro recibido:', req.body);
 
   try {
+    
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'El usuario ya existe.' });
@@ -19,12 +21,14 @@ exports.register = async (req, res) => {
       token: generateToken(user.id),
     });
   } catch (error) {
+    console.error('❌ Error al registrar:', error.message);
     res.status(500).json({ error: 'Error al crear el usuario.' });
   }
 };
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
+  console.log('🔐 Intento de login:', email);
 
   try {
     const user = await User.findOne({ where: { email } });
@@ -42,6 +46,7 @@ exports.login = async (req, res) => {
       token: generateToken(user.id),
     });
   } catch (error) {
+    console.error('❌ Error en login:', error.message);
     res.status(500).json({ error: 'Error en el servidor.' });
   }
 };

@@ -1,3 +1,4 @@
+version: '3.8'
 
 services:
   postgresdb:
@@ -9,8 +10,13 @@ services:
       POSTGRES_DB: eventos-backend
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 7781Cajas
+      POSTGRES_HOST: postgresdb
+      POSTGRES_PORT: 5432
+      JWT_SECRET: 72672135123hhaas
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   mongodb:
     image: mongo:6
@@ -19,7 +25,55 @@ services:
       - "27017:27017"
     volumes:
       - mongodata:/data/db
+    networks:
+      - app-network
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth_service
+    ports:
+      - "4001:4001"
+    depends_on:
+      - postgresdb
+    environment:
+      POSTGRES_DB: eventos-backend
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 7781Cajas
+      POSTGRES_HOST: postgresdb
+      POSTGRES_PORT: 5432
+      JWT_SECRET: 72672135123hhaas
+    networks:
+      - app-network
+
+  event-service:
+    build: ./event-service
+    container_name: event_service
+    ports:
+      - "4002:4002"
+    depends_on:
+      - mongodb
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/eventosdb
+      JWT_SECRET: 72672135123hhaas
+    networks:
+      - app-network
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway_service
+    ports:
+      - "4000:4000"
+    depends_on:
+      - auth-service
+      - event-service
+    networks:
+      - app-network
 
 volumes:
   pgdata:
   mongodata:
+
+networks:
+  app-network:
+    driver: bridge
+    
